@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
     StyleSheet,
     KeyboardAvoidingView,
-    Image
+    Image,
+    AsyncStorage
 } from 'react-native';
 import Header from '../Components/Header';
 import {
@@ -12,7 +14,9 @@ import {
 
 import Form from '../Components/Form';
 import Container from '../Components/Container';
+import Loader from '../Components/Loader';
 import { registrationUserViaGitHub } from '../Redux/auth/actions';
+import AsyncStorageConfig from '../Config/AsyncStorageConfig';
 
 class LoginScreen extends Component {
 
@@ -20,22 +24,51 @@ class LoginScreen extends Component {
         super(props);
         this.state = {
             password: null,
-            email: null
+            username: null,
+            loader: true
         };
     }
 
-    componentDidMount() {
-
+    componentWillMount() {
+        AsyncStorage.getItem(AsyncStorageConfig.USER_REGISTERED).then(value => {
+            if (value) {
+                this.props.navigation.navigate('MainScreen', { onCancelLoader: this.cancelLoader });
+            } else {
+                this.cancelLoader();
+            }
+        });
     }
+
+    componentDidMount() {
+        console.log(this.props)
+    }
+
+    cancelLoader = () => this.setState({ loader: false });
 
     onChangeEmail = text => this.setState({ email: text });
 
     onChangePass = text => this.setState({ password: text });
 
+    onPressEnter = () => {
+        const { password, username } = this.state;
+        const { dispatch, navigation } = this.props;
+
+        const data = {
+            username: username,
+            password
+        };
+
+        dispatch(registrationUserViaGitHub(username)).then(resp => {
+            AsyncStorage.setItem(AsyncStorageConfig.USER_REGISTERED, 'true');
+            navigation.navigate('MainScreen')
+        });
+    };
+
     render () {
         const {
             password,
-            email
+            username,
+            loader
         } = this.state;
 
         return (
@@ -50,18 +83,26 @@ class LoginScreen extends Component {
                     style={[styles.wrapper]}>
                     <Form
                         password={password}
-                        email={email}
+                        email={username}
                         style={styles.form}
                         onChangeEmail={this.onChangeEmail}
                         onChangePass={this.onChangePass}
+                        onPress={this.onPressEnter}
                     />
                 </KeyboardAvoidingView>
+                <Loader visible={loader}/>
             </Container>
         )
     }
 }
 
-export default LoginScreen;
+const mapStateToProps = (state) => {
+    return ({
+        auth: state.auth
+    });
+};
+
+export default connect(mapStateToProps)(LoginScreen);
 
 const styles = StyleSheet.create({
     wrapper: {
@@ -78,7 +119,7 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         alignSelf: 'center',
-        top: 120,
+        top: 110,
         position: 'absolute'
     }
 });
