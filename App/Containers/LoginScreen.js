@@ -17,6 +17,7 @@ import Container from '../Components/Container';
 import Loader from '../Components/Loader';
 import { registrationUserViaGitHub } from '../Redux/auth/actions';
 import AsyncStorageConfig from '../Config/AsyncStorageConfig';
+import SplashScreen from 'react-native-splash-screen'
 
 class LoginScreen extends Component {
 
@@ -25,23 +26,27 @@ class LoginScreen extends Component {
         this.state = {
             password: null,
             username: null,
-            loader: true
+            loader: false
         };
     }
 
     componentWillMount() {
-        AsyncStorage.getItem(AsyncStorageConfig.USER_REGISTERED).then(value => {
-            if (value) {
-                this.props.navigation.navigate('MainScreen', { onCancelLoader: this.cancelLoader });
-            } else {
-                this.cancelLoader();
-            }
-        });
+        this.checkUserRegistered();
     }
 
     componentDidMount() {
         console.log(this.props)
     }
+
+    checkUserRegistered = () => {
+        AsyncStorage.getItem(AsyncStorageConfig.USER_REGISTERED).then(value => {
+            if (value) {
+                this.props.navigation.navigate('MainScreen', { onCancelLoader: this.cancelLoader });
+            } else {
+                SplashScreen.hide();
+            }
+        });
+    };
 
     cancelLoader = () => this.setState({ loader: false });
 

@@ -7,6 +7,7 @@ import {
 import Header from '../Components/Header';
 import { connect } from 'react-redux';
 import Container from '../Components/Container';
+import SplashScreen from 'react-native-splash-screen'
 
 
 class MainScreen extends Component {
@@ -26,7 +27,7 @@ class MainScreen extends Component {
     }
 
     componentDidMount() {
-
+        SplashScreen.hide();
     }
 
     renderScrollActivityIndicator() {
