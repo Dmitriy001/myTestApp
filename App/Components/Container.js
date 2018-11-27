@@ -5,7 +5,6 @@ import {
     Keyboard
 } from 'react-native';
 
-
 const Container = props => (
     <TouchableOpacity
         style={[ styles.main, props.style ]}

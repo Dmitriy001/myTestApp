@@ -13,20 +13,33 @@ export function registrationUserViaGitHub(username) {
     });
 }
 
-// export function registrationUserViaGitHub(data) {
-//     debugger
-//     return dispatch => new Promise((resolve, reject) => {
-//         axios({
-//             method: 'get',
-//             url: `https://api.github.com/search/repositories?q=uuid`
-//         })
-//             .then(resp => {
-//                 debugger
-//                 resolve(resp);
-//             }).catch(error => {
-//             debugger
-//             reject(error);
-//         })
-//     });
-// }
+export function searchRepositoriesByQuery(query, params) {
+    const { limit, offset } = params;
+    return dispatch => new Promise((resolve, reject) => {
+        axios({
+            method: 'get',
+            url: `https://api.github.com/search/repositories?q=${query}`
+        })
+            .then(resp => {
+                dispatch(setList(resp.data.items.slice(offset, offset + limit)));
+                resolve(resp);
+            }).catch(error => {
+            reject(error);
+        })
+    });
+}
+
+function setList(data) {
+    return dispatch => {
+        dispatch({ type: 'SET_LIST', payload: data });
+    }
+}
+
+export function clearFoundObjects() {
+    return { type: 'CLEAR' };
+}
+
+
+
+
 

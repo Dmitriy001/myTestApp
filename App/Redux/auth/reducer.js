@@ -5,10 +5,14 @@ const auth = (state = initialState, action) => {
     switch (action.type) {
         case 'SET_LIST': {
             return {
-                ...state,
-                list: state.list ?
-                    state.list.concat(action.payload) : [].concat(action.payload)
-            }
+                list: state.list
+                    ? state.list.concat(action.payload) : [].concat(action.payload)
+            };
+        }
+        case 'CLEAR': {
+            return {
+                list: []
+            };
         }
         default:
             return state;

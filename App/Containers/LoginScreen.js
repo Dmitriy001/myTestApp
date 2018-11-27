@@ -4,7 +4,8 @@ import {
     StyleSheet,
     KeyboardAvoidingView,
     Image,
-    AsyncStorage
+    AsyncStorage,
+    Alert
 } from 'react-native';
 import Header from '../Components/Header';
 import {
@@ -50,22 +51,23 @@ class LoginScreen extends Component {
 
     cancelLoader = () => this.setState({ loader: false });
 
-    onChangeEmail = text => this.setState({ email: text });
+    onChangeEmail = text => this.setState({ username: text });
 
     onChangePass = text => this.setState({ password: text });
 
     onPressEnter = () => {
-        const { password, username } = this.state;
+        const { username } = this.state;
+        if (!username || !username.length) {
+            Alert.alert('Please, try again');
+            return;
+        }
         const { dispatch, navigation } = this.props;
-
-        const data = {
-            username: username,
-            password
-        };
-
-        dispatch(registrationUserViaGitHub(username)).then(resp => {
-            AsyncStorage.setItem(AsyncStorageConfig.USER_REGISTERED, 'true');
-            navigation.navigate('MainScreen')
+        this.setState({ loader: true }, () => {
+            dispatch(registrationUserViaGitHub(username)).then(resp => {
+                AsyncStorage.setItem(AsyncStorageConfig.USER_REGISTERED, 'true').then(() => {
+                    navigation.navigate('MainScreen', { onCancelLoader: this.cancelLoader });
+                });
+            }).catch(() => Alert.alert('Please, try again'));
         });
     };
 
