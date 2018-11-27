@@ -5,11 +5,19 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "android:build": "cd android && ./gradlew assembleRelease",
+    "ios-6": "react-native run-ios --simulator='iPhone 6'",
     "test": "jest"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "react": "16.6.1",
-    "react-native": "0.57.7"
+    "react-native": "0.57.7",
+    "react-navigation": "^1.5.13",
+    "react-navigation-redux-helpers": "^1.0.5",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "redux-devtools-extension": "^2.13.5",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "babel-jest": "23.6.0",
