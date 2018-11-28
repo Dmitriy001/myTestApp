@@ -6,9 +6,11 @@ import {
     View,
     Text,
     StyleSheet,
-    Keyboard
+    Keyboard,
+    TouchableOpacity
 } from 'react-native';
 import Header from '../Components/Header';
+import ListItem from '../Components/ListItem';
 import { connect } from 'react-redux';
 import SplashScreen from 'react-native-splash-screen';
 import AsyncStorageConfig from '../Config/AsyncStorageConfig';
@@ -20,6 +22,7 @@ import {
 } from 'native-base';
 
 class MainScreen extends Component {
+
     constructor (props) {
         super(props);
         this.state = {
@@ -74,7 +77,7 @@ class MainScreen extends Component {
                                     ...this.state.params,
                                     offset: this.state.params.offset + this.state.params.limit
                                 }
-                            })
+                            });
                         }
                     });
             });
@@ -86,16 +89,14 @@ class MainScreen extends Component {
             const { list } = this.props.auth;
             return (
                 <FlatList
-                    scrollEnabled
+                    onScroll={() => Keyboard.dismiss()}
                     keyExtractor={(item, i) => i.toString()}
                     data={list}
                     onEndReached={() => this.loadMoreData()}
                     onEndReachedThreshold={0.1}
                     ListFooterComponent={this.state.canLoadMore ? this.renderScrollActivityIndicator : null}
                     renderItem={({ item }) => (
-                            <Text key={item.name} style={{ fontSize: 30 }}>
-                                {item.name}
-                            </Text>
+                        <ListItem name={item.name} />
                         )
                     }
                 />
@@ -103,11 +104,11 @@ class MainScreen extends Component {
         } else if (this.state.searchLoader) {
             return <ActivityIndicator
                 color={'black'}
-                style={styles.loader}
+                style={styles.marginTopText}
                 size={'small'}
             />
         } else if (this.state.notFoundByQuery || (this.props.auth.list && !this.props.auth.list.length)){
-            return <Text style={styles.content}>Not found</Text>
+            return <Text style={[styles.content, styles.marginTopText]}>Nothing</Text>
         }
     }
 
@@ -122,27 +123,30 @@ class MainScreen extends Component {
         if (this.searchTimer) {
             clearTimeout(this.searchTimer);
         }
-        this.setState({searchPhrase: query, params: { limit: 15, offset: 0 }}, () =>
+        this.setState({
+            searchPhrase: query,
+            params: { limit: 15, offset: 0 }}, () => {
             this.searchTimer = setTimeout(() => {
-            this.setState({ notFoundByQuery: false }, () => {
-                if (query.length >= 3) {
-                    this.setState({ searchLoader: true }, () => {
-                        this.props.dispatch(searchRepositoriesByQuery(query, this.state.params)).then(() => {
-                            this.setState({ searchLoader: false }, () => Keyboard.dismiss());
-                        }).catch(() => {
-                            this.setState({ searchLoader: false, notFoundByQuery: true }, () => Keyboard.dismiss());
+                this.setState({ notFoundByQuery: false }, () => {
+                    if (query.length >= 2) {
+                        this.setState({ searchLoader: true }, () => {
+                            this.props.dispatch(searchRepositoriesByQuery(query, this.state.params)).then(() => {
+                                this.setState({ searchLoader: false });
+                            }).catch(() => {
+                                this.setState({ searchLoader: false, notFoundByQuery: true });
+                            });
                         });
-                    });
-                }
-            });
-        }, 150));
+                    }
+                });
+            }, 350)
+        });
 
 
     };
 
     render () {
         return (
-            <View style={{flex: 1}}>
+            <View style={styles.full}>
                 <Header
                     title={'Main'}
                     rightText={'Sign Out'}
@@ -164,17 +168,23 @@ class MainScreen extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     return ({ auth: state.auth });
 };
 
 export default connect(mapStateToProps)(MainScreen);
 
 const styles = StyleSheet.create({
+    full: {
+        flex: 1
+    },
     item: {
         width: 320
     },
     content: {
         alignSelf: 'center'
+    },
+    marginTopText: {
+        marginTop: 20
     }
 });

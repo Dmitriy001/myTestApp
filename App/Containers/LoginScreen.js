@@ -12,7 +12,6 @@ import {
     Values,
     Images
 } from '../Themes';
-
 import Form from '../Components/Form';
 import Container from '../Components/Container';
 import Loader from '../Components/Loader';
@@ -35,14 +34,12 @@ class LoginScreen extends Component {
         this.checkUserRegistered();
     }
 
-    componentDidMount() {
-        console.log(this.props)
-    }
-
     checkUserRegistered = () => {
         AsyncStorage.getItem(AsyncStorageConfig.USER_REGISTERED).then(value => {
             if (value) {
-                this.props.navigation.navigate('MainScreen', { onCancelLoader: this.cancelLoader });
+                this.props.navigation.navigate(
+                    'MainScreen',
+                    { onCancelLoader: this.cancelLoader });
             } else {
                 SplashScreen.hide();
             }
@@ -67,7 +64,11 @@ class LoginScreen extends Component {
                 AsyncStorage.setItem(AsyncStorageConfig.USER_REGISTERED, 'true').then(() => {
                     navigation.navigate('MainScreen', { onCancelLoader: this.cancelLoader });
                 });
-            }).catch(() => Alert.alert('Please, try again'));
+            }).catch(() => {
+                this.setState({ loader: false }, () => {
+                    setTimeout(() => Alert.alert('Please, try again'), 500);
+                });
+            });
         });
     };
 
@@ -103,7 +104,7 @@ class LoginScreen extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     return ({ auth: state.auth });
 };
 
