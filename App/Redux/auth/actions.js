@@ -1,4 +1,5 @@
 import axios from 'axios';
+import AsyncStorageConfig from "../../Config/AsyncStorageConfig";
 
 export function registrationUserViaGitHub(username) {
     return dispatch => new Promise((resolve, reject) => {
@@ -29,7 +30,7 @@ export function searchRepositoriesByQuery(query, params) {
     });
 }
 
-function setList(data) {
+export function setList(data) {
     return dispatch => {
         dispatch({ type: 'SET_LIST', payload: data });
     }

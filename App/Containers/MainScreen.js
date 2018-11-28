@@ -6,15 +6,14 @@ import {
     View,
     Text,
     StyleSheet,
-    Keyboard,
-    TouchableOpacity
+    Keyboard
 } from 'react-native';
 import Header from '../Components/Header';
 import ListItem from '../Components/ListItem';
 import { connect } from 'react-redux';
 import SplashScreen from 'react-native-splash-screen';
 import AsyncStorageConfig from '../Config/AsyncStorageConfig';
-import { searchRepositoriesByQuery, clearFoundObjects } from '../Redux/auth/actions';
+import { searchRepositoriesByQuery, clearFoundObjects, setList } from '../Redux/auth/actions';
 import {
     Icon,
     Input,
@@ -27,7 +26,7 @@ class MainScreen extends Component {
         super(props);
         this.state = {
             searchPhrase: null,
-            searchLoader: null,
+            searchLoader: false,
             notFoundByQuery: false,
             canLoadMore: true,
             scrollLoading: false,
@@ -41,9 +40,30 @@ class MainScreen extends Component {
     }
 
     componentDidMount() {
-        this.props.navigation.state.params.onCancelLoader();
-        SplashScreen.hide();
+        this.getDataFromAsyncStorage();
     }
+
+    getDataFromAsyncStorage = () => {
+        AsyncStorage.getItem(AsyncStorageConfig.LAST_LIST).then(list => {
+            if (list) {
+                const parseList = JSON.parse(list);
+                this.props.dispatch(setList(parseList));
+                this.setState(prevState => ({
+                    params: {
+                        offset: parseList.length,
+                        ...prevState.params
+                    }
+                }));
+            }
+            AsyncStorage.getItem(AsyncStorageConfig.QUERY).then(query => {
+                if (query) {
+                    this.setState({ searchPhrase: query });
+                }
+                this.props.navigation.state.params.onCancelLoader();
+                SplashScreen.hide();
+            });
+        });
+    };
 
     renderScrollActivityIndicator = () => {
         if (this.state.scrollLoading) {
@@ -95,17 +115,12 @@ class MainScreen extends Component {
                     onEndReached={() => this.loadMoreData()}
                     onEndReachedThreshold={0.1}
                     ListFooterComponent={this.state.canLoadMore ? this.renderScrollActivityIndicator : null}
-                    renderItem={({ item }) => {
-                        console.log(item);
-                        return (
+                    renderItem={({ item }) => (
                             <ListItem
                                 name={item.name.slice(0, 30)}
                                 url={item.html_url}
                             />
-                            )
-
-                    }
-                    }
+                    )}
                 />
             )
         } else if (this.state.searchLoader) {
@@ -120,7 +135,11 @@ class MainScreen extends Component {
     }
 
     onPressRightText = () => {
-        AsyncStorage.removeItem(AsyncStorageConfig.USER_REGISTERED);
+        AsyncStorage.multiRemove([
+            AsyncStorageConfig.USER_REGISTERED,
+            AsyncStorageConfig.QUERY,
+            AsyncStorageConfig.LAST_LIST
+        ]);
         this.props.navigation.pop();
     };
 
@@ -133,12 +152,15 @@ class MainScreen extends Component {
         this.setState({
             searchPhrase: query,
             params: { limit: 15, offset: 0 }}, () => {
+            AsyncStorage.setItem(AsyncStorageConfig.QUERY, query);
             this.searchTimer = setTimeout(() => {
                 this.setState({ notFoundByQuery: false }, () => {
                     if (query.length >= 2) {
                         this.setState({ searchLoader: true }, () => {
-                            this.props.dispatch(searchRepositoriesByQuery(query, this.state.params)).then(() => {
-                                this.setState({ searchLoader: false });
+                            this.props.dispatch(searchRepositoriesByQuery(query, this.state.params)).then(resp => {
+                                this.setState({ searchLoader: false }, () => {
+                                    AsyncStorage.setItem(AsyncStorageConfig.LAST_LIST, JSON.stringify(this.props.auth.list));
+                                });
                             }).catch(() => {
                                 this.setState({ searchLoader: false, notFoundByQuery: true });
                             });
