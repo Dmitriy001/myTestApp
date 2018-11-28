@@ -6,14 +6,19 @@ import {
     View,
     Text,
     StyleSheet,
-    Keyboard
+    Keyboard,
+    NetInfo
 } from 'react-native';
 import Header from '../Components/Header';
 import ListItem from '../Components/ListItem';
 import { connect } from 'react-redux';
 import SplashScreen from 'react-native-splash-screen';
 import AsyncStorageConfig from '../Config/AsyncStorageConfig';
-import { searchRepositoriesByQuery, clearFoundObjects, setList } from '../Redux/auth/actions';
+import {
+    searchRepositoriesByQuery,
+    clearFoundObjects,
+    setList
+} from '../Redux/auth/actions';
 import {
     Icon,
     Input,
@@ -25,6 +30,7 @@ class MainScreen extends Component {
     constructor (props) {
         super(props);
         this.state = {
+            isConnected: true,
             searchPhrase: null,
             searchLoader: false,
             notFoundByQuery: false,
@@ -40,6 +46,7 @@ class MainScreen extends Component {
     }
 
     componentDidMount() {
+        this.checkNetwork();
         this.getDataFromAsyncStorage();
     }
 
@@ -64,6 +71,18 @@ class MainScreen extends Component {
             });
         });
     };
+
+    checkNetwork() {
+        NetInfo.isConnected.fetch();
+        const handleFirstConnectivityChange = isConnected => {
+            if (isConnected) { this.setState({ isConnected: true }); }
+            else { this.setState({ isConnected: false }); }
+        };
+        NetInfo.isConnected.addEventListener(
+            'connectionChange',
+            handleFirstConnectivityChange
+        );
+    }
 
     renderScrollActivityIndicator = () => {
         if (this.state.scrollLoading) {
@@ -105,8 +124,10 @@ class MainScreen extends Component {
     }
 
     renderList() {
-        if (this.props.auth.list && this.props.auth.list.length) {
-            const { list } = this.props.auth;
+        const { list } = this.props.auth;
+
+
+        if (list && list.length) {
             return (
                 <FlatList
                     onScroll={() => Keyboard.dismiss()}
@@ -123,13 +144,15 @@ class MainScreen extends Component {
                     )}
                 />
             )
+        } else if ((!list || !list.length) && !this.state.isConnected) {
+            return <Text style={[styles.content, styles.marginTopText]}>Offline</Text>
         } else if (this.state.searchLoader) {
             return <ActivityIndicator
                 color={'black'}
                 style={styles.marginTopText}
                 size={'small'}
             />
-        } else if (this.state.notFoundByQuery || (this.props.auth.list && !this.props.auth.list.length)){
+        } else if (this.state.notFoundByQuery || (list && !list.length)){
             return <Text style={[styles.content, styles.marginTopText]}>Nothing</Text>
         }
     }
