@@ -24,7 +24,6 @@ class LoginScreen extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            password: null,
             username: null,
             loader: false
         };
@@ -50,8 +49,6 @@ class LoginScreen extends Component {
 
     onChangeEmail = text => this.setState({ username: text });
 
-    onChangePass = text => this.setState({ password: text });
-
     onPressEnter = () => {
         const { username } = this.state;
         if (!username || !username.length) {
@@ -74,7 +71,6 @@ class LoginScreen extends Component {
 
     render () {
         const {
-            password,
             username,
             loader
         } = this.state;
@@ -90,11 +86,9 @@ class LoginScreen extends Component {
                     behavior= {"padding"}
                     style={[styles.wrapper]}>
                     <Form
-                        password={password}
                         email={username}
                         style={styles.form}
                         onChangeEmail={this.onChangeEmail}
-                        onChangePass={this.onChangePass}
                         onPress={this.onPressEnter}
                     />
                 </KeyboardAvoidingView>

@@ -21,18 +21,6 @@ const Form = props => {
                     placeholderTextColor={'rgba(0,0,0,0.2)'}
                 />
             </View>
-            {/*<View style={styles.inputEmail}>*/}
-                {/*<TextInput*/}
-                    {/*value={props.password}*/}
-                    {/*onChangeText={e => props.onChangePass(e)}*/}
-                    {/*placeholder={'password'}*/}
-                    {/*placeholderTextColor={'rgba(0,0,0,0.2)'}*/}
-                    {/*style={styles.input}*/}
-                    {/*selectionColor={'rgba(0,0,0,0.9)'}*/}
-                    {/*textContentType={'password'}*/}
-                    {/*secureTextEntry={true}*/}
-                {/*/>*/}
-            {/*</View>*/}
             <Button
                 onPress={props.onPress}
                 bordered

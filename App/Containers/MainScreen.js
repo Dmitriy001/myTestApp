@@ -95,9 +95,16 @@ class MainScreen extends Component {
                     onEndReached={() => this.loadMoreData()}
                     onEndReachedThreshold={0.1}
                     ListFooterComponent={this.state.canLoadMore ? this.renderScrollActivityIndicator : null}
-                    renderItem={({ item }) => (
-                        <ListItem name={item.name} />
-                        )
+                    renderItem={({ item }) => {
+                        console.log(item);
+                        return (
+                            <ListItem
+                                name={item.name.slice(0, 30)}
+                                url={item.html_url}
+                            />
+                            )
+
+                    }
                     }
                 />
             )
@@ -149,7 +156,7 @@ class MainScreen extends Component {
             <View style={styles.full}>
                 <Header
                     title={'Main'}
-                    rightText={'Sign Out'}
+                    rightText={'logout'}
                     onPressRightText={this.onPressRightText}
                 />
                 <View style={styles.content}>

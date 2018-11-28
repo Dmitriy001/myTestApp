@@ -4,10 +4,11 @@ import {
     StyleSheet,
     Modal,
     Text,
-    TouchableOpacity
+    TouchableOpacity,
+    Linking
 } from 'react-native';
+import { Button } from 'native-base';
 
-import { Images } from '../Themes';
 
 class ListItem extends Component {
 
@@ -20,16 +21,20 @@ class ListItem extends Component {
 
     visibleModal = () => this.setState(prevState => ({ visible: !prevState.visible }));
 
+    openLink = () => {
+        this.setState({ visible: false }, () => {
+            Linking.openURL(this.props.url);
+        });
+    };
+
     render () {
 
-        const {
-            name,
-        } = this.props;
+        const { name } = this.props;
 
         return (
             <TouchableOpacity onPress={this.visibleModal} style={styles.viewItem}>
                 <Text style={styles.fontSize}>
-                    {name.slice(0, 30)}
+                    {name}
                 </Text>
                 <Modal
                     animationType='fade'
@@ -37,15 +42,35 @@ class ListItem extends Component {
                     visible={this.state.visible}
                     onRequestClose={() => {}}
                 >
-                    <TouchableOpacity
-                        activeOpacity={1}
-                        style={styles.main}
-                        onPress={this.visibleModal}
-                    >
+                    <View style={styles.main}>
                         <View style={styles.whiteBox}>
-                            <Text>Some content will be here.</Text>
+                            <Text style={styles.modalTitle}>{name}</Text>
+                            <TouchableOpacity
+                                hitSlop={{
+                                    left: 30,
+                                    right: 30,
+                                    top: 10,
+                                    bottom: 10
+                                }}
+                                onPress={this.openLink}
+                            >
+                                <Text style={styles.link}>
+                                    {'open link'}
+                                </Text>
+                            </TouchableOpacity>
+                            <Button
+                                onPress={this.visibleModal}
+                                bordered
+                                dark
+                                block
+                                style={styles.dark}
+                            >
+                                <Text>
+                                    Close
+                                </Text>
+                            </Button>
                         </View>
-                    </TouchableOpacity>
+                    </View>
                 </Modal>
             </TouchableOpacity>
         )
@@ -55,6 +80,10 @@ class ListItem extends Component {
 export default ListItem;
 
 const styles = StyleSheet.create({
+    dark: {
+        width: 250,
+        alignSelf: 'center'
+    },
     viewItem: {
         height: 50
     },
@@ -69,10 +98,13 @@ const styles = StyleSheet.create({
     },
     whiteBox: {
         width: 300,
-        height: 200,
+        minHeight: 200,
         alignSelf: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-around',
         backgroundColor: 'white',
-        borderRadius: 4,
+        borderRadius: 5,
         shadowColor: 'black',
         shadowOffset: {
             width: 0,
@@ -82,4 +114,11 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5
     },
+    modalTitle: {
+        fontSize: 20
+    },
+    link: {
+        color: 'blue',
+        textDecorationLine: 'underline'
+    }
 });

@@ -16,8 +16,7 @@ const Header = props => {
         >
             <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={props.arrowBack}
-                style={[styles.elem,styles.arrow]}>
+                style={[styles.elem, styles.arrow]}>
                 {props.leftContent}
             </TouchableOpacity>
             <View style={styles.elem}>
@@ -63,7 +62,8 @@ const styles = StyleSheet.create({
         marginTop: Platform.OS === 'ios' ? 15 : 0
     },
     rightText: {
-        fontSize: 18
+        fontSize: 18,
+        marginTop: 15
     },
     arrow: {
         alignItems: 'flex-start',
