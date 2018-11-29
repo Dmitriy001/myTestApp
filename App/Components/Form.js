@@ -11,12 +11,21 @@ import Values from '../Themes/Values';
 const Form = props => {
     return (
         <View style={props.style}>
-            <View style={[styles.inputEmail]}>
+            <View style={styles.inputEmail}>
                 <TextInput
                     value={props.email}
                     onChangeText={e => props.onChangeEmail(e)}
-                    style={styles.input}
+                    style={[styles.input, { marginBottom: 10 }]}
                     placeholder={'Enter username'}
+                    selectionColor={'rgba(0,0,0,0.9)'}
+                    placeholderTextColor={'rgba(0,0,0,0.2)'}
+                />
+                <TextInput
+                    secureTextEntry
+                    value={props.password}
+                    onChangeText={e => props.onChangePassword(e)}
+                    style={styles.input}
+                    placeholder={'Enter password'}
                     selectionColor={'rgba(0,0,0,0.9)'}
                     placeholderTextColor={'rgba(0,0,0,0.2)'}
                 />
@@ -57,7 +66,7 @@ const styles = StyleSheet.create({
     inputEmail: {
         marginTop: Platform.OS === 'ios' ? 20 : 0,
         display: 'flex',
-        flexDirection: 'row',
+        flexDirection: 'column',
         alignItems: 'center',
         width: Values.screenWidth - 130
     },

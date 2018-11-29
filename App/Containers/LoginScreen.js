@@ -24,8 +24,9 @@ class LoginScreen extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            username: null,
-            loader: false
+            username: '',
+            loader: false,
+            password: ''
         };
     }
 
@@ -48,21 +49,23 @@ class LoginScreen extends Component {
     cancelLoader = () => this.setState({ loader: false });
 
     onChangeEmail = text => this.setState({ username: text });
+    
+    onChangePassword = text => this.setState({ password: text });
 
     onPressEnter = () => {
-        const { username } = this.state;
-        if (!username || !username.length) {
+        const { username, password } = this.state;
+        if (!username.length || !password.length) {
             Alert.alert('Please, try again');
             return;
         }
         const { dispatch, navigation } = this.props;
         this.setState({ loader: true }, () => {
-            dispatch(registrationUserViaGitHub(username)).then(resp => {
+            dispatch(registrationUserViaGitHub(username, password)).then(resp => {
                 AsyncStorage.setItem(AsyncStorageConfig.USER_REGISTERED, 'true').then(() => {
                     navigation.navigate('MainScreen', { onCancelLoader: this.cancelLoader });
                 });
-            }).catch(() => {
-                this.setState({ loader: false, username: '' }, () => {
+            }).catch(err => {
+                this.setState({ loader: false }, () => {
                     setTimeout(() => Alert.alert('Please, try again'), 500);
                 });
             });
@@ -89,6 +92,7 @@ class LoginScreen extends Component {
                         email={username}
                         style={styles.form}
                         onChangeEmail={this.onChangeEmail}
+                        onChangePassword={this.onChangePassword}
                         onPress={this.onPressEnter}
                     />
                 </KeyboardAvoidingView>

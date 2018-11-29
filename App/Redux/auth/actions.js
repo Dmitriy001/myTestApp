@@ -1,10 +1,20 @@
 import axios from 'axios';
 
-export function registrationUserViaGitHub(username) {
+export function registrationUserViaGitHub(username, password) {
+    
+    let auth = btoa(username + ":" + password);
+    
     return dispatch => new Promise((resolve, reject) => {
         axios({
-            method: 'get',
-            url: `https://api.github.com/users/${username}`
+            method: 'post',
+            url: `https://api.github.com/authorizations`,
+            headers: { Authorization: "Basic " + auth },
+            data: {
+                "scopes": [
+                    "public_repo"
+                ],
+                "note": "admin script"
+            }
         }).then(resp => {
             resolve(resp);
         }).catch(error => {
