@@ -42,7 +42,7 @@ export default Form;
 const styles = StyleSheet.create({
     dark: {
         alignSelf: 'center',
-        marginTop: 40,
+        marginTop: 20,
         width: 200
     },
     input: {

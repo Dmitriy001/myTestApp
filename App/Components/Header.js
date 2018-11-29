@@ -41,7 +41,7 @@ export default Header;
 const styles = StyleSheet.create({
     mainContainer: {
         width: '100%',
-        height: 100,
+        height: 70,
         backgroundColor: 'white',
         display: 'flex',
         alignItems: 'center',
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     },
     rightText: {
         fontSize: 18,
-        marginTop: 15
+        marginTop: Platform.OS === 'ios' ? 15 : 0
     },
     arrow: {
         alignItems: 'flex-start',

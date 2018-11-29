@@ -17,7 +17,7 @@ import Container from '../Components/Container';
 import Loader from '../Components/Loader';
 import { registrationUserViaGitHub } from '../Redux/auth/actions';
 import AsyncStorageConfig from '../Config/AsyncStorageConfig';
-import SplashScreen from 'react-native-splash-screen'
+import SplashScreen from 'react-native-splash-screen';
 
 class LoginScreen extends Component {
 
@@ -62,7 +62,7 @@ class LoginScreen extends Component {
                     navigation.navigate('MainScreen', { onCancelLoader: this.cancelLoader });
                 });
             }).catch(() => {
-                this.setState({ loader: false }, () => {
+                this.setState({ loader: false, username: '' }, () => {
                     setTimeout(() => Alert.alert('Please, try again'), 500);
                 });
             });
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         alignSelf: 'center',
-        top: 110,
+        top: 90,
         position: 'absolute'
     }
 });
