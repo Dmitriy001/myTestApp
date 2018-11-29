@@ -1,5 +1,4 @@
 import axios from 'axios';
-import AsyncStorageConfig from "../../Config/AsyncStorageConfig";
 
 export function registrationUserViaGitHub(username) {
     return dispatch => new Promise((resolve, reject) => {
