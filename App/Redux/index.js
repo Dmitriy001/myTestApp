@@ -3,8 +3,7 @@ import auth from './auth/reducer';
 import nav from './navigation/reducer';
 
 const appReducer = combineReducers({
-    auth,
-    nav
+    auth
 });
 
 const rootReducer = (state, action) => {
